@@ -1,5 +1,3 @@
-// src/App.jsx
-import React from 'react';
 import { AppRoutes } from './routes/routes';
 
 import { io } from 'socket.io-client';
@@ -7,7 +5,9 @@ import { io } from 'socket.io-client';
 function App() {
 
   // Conectando ao backend que criamos no passo 1
-  const socket = io('http://localhost:3000');
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
+  const socket = io(BACKEND_URL);
 
   // Ouvindo o evento nativo de conexão
   socket.on("connect", () => {
