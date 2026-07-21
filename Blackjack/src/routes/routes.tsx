@@ -1,5 +1,3 @@
-// src/AppRoutes.jsx
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
 // Importando as páginas que estarão em outros arquivos
