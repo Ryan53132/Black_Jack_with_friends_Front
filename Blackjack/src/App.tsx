@@ -7,7 +7,11 @@ function App() {
   // Conectando ao backend que criamos no passo 1
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-  const socket = io(BACKEND_URL);
+  const socket = io(BACKEND_URL, {
+    extraHeaders: {
+      "ngrok-skip-browser-warning": "true"
+    }
+  });
 
   // Ouvindo o evento nativo de conexão
   socket.on("connect", () => {
