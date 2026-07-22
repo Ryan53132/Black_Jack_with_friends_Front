@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 
 // Importando as páginas que estarão em outros arquivos
 import Home from '../pages/home';
-import Login from '../pages/login';
 import Dashboard from '../pages/dashboard';
 
 
@@ -21,8 +20,6 @@ export function AppRoutes() {
       <Routes>
         {/* Rotas Públicas */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-
         {/* Rotas Privadas */}
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
