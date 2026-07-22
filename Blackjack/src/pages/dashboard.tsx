@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { socket, getnome } from '../App.tsx';
 
 interface MensagemData {
