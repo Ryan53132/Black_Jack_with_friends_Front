@@ -5,6 +5,7 @@ import Home from '../pages/home';
 import Login from '../pages/login';
 import Dashboard from '../pages/dashboard';
 
+
 // O "Segurança" das rotas privadas
 function PrivateRoute() {
   // Aqui você checaria o estado real do usuário (ex: Context API ou Redux)
