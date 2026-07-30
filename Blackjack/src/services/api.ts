@@ -13,6 +13,7 @@ export async function fetchComAuth(endpoint: string, options: RequestInit = {}) 
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
     ...(options.headers as Record<string, string>),
   };
 
@@ -31,6 +32,9 @@ export async function fetchComAuth(endpoint: string, options: RequestInit = {}) 
     try {
       const refreshResponse = await fetch(`${BACKEND_URL}/api/refresh`, {
         method: "POST",
+        headers: {
+          "ngrok-skip-browser-warning": "true", // 🚨 Adicione aqui também!
+        },
         credentials: "include",
       });
 

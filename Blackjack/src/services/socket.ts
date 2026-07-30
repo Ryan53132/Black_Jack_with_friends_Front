@@ -1,4 +1,4 @@
-// src/services/socket.ts
+/*// src/services/socket.ts
 import { io, Socket } from "socket.io-client";
 import { getAccessToken } from "./api";
 
@@ -18,4 +18,4 @@ export const getSocket = (): Socket => {
     });
   }
   return socket;
-};
+};*/
