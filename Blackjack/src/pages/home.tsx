@@ -1,133 +1,114 @@
-import { useState } from 'react';
-import {socket} from '../App.tsx';
-import { useNavigate } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 
 export default function BlackjackLanding() {
-  const [playerName, setPlayerName] = useState('');
-  const [roomCode, setRoomCode] = useState('');
-  const navigate = useNavigate();
-  const handleJoin = () => {
-    if (!playerName.trim() || !roomCode.trim()) return;
-    socket.emit("entrar_na_sala",{usuario: playerName,sala: roomCode})
-    navigate("/dashboard", { state: { playerName, roomCode } });
-  };
-
+  
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between items-center px-6 py-10 font-sans selection:bg-emerald-500 selection:text-black relative overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-fuchsia-500 selection:text-zinc-950 flex flex-col justify-between">
       
-      {/* Glows de Fundo para o Clima de Cassino Escuro */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-950/30 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[400px] h-[300px] bg-amber-900/20 blur-[120px] rounded-full pointer-events-none" />
+      {/* ================= NAVBAR ================= */}
+      <header className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 px-6 lg:px-12 py-5 flex items-center justify-between">
+        
+        {/* LOGO ECHO PALACE COM FONTE DE JAZZ / SERIFADA */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <span 
+            className="text-2xl sm:text-3xl font-black italic tracking-wider text-fuchsia-500 drop-shadow-[0_0_12px_rgba(217,70,239,0.6)] group-hover:drop-shadow-[0_0_18px_rgba(217,70,239,0.9)] transition-all"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Echo <span className="text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]">Palace</span>
+          </span>
+        </Link>
 
-      {/* 1. TÍTULO (NO TOPO) */}
-      <header className="relative z-10 text-center space-y-3 max-w-xl">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          Multiplayer Privado
+        {/* LINKS DE AUTENTICAÇÃO */}
+        <div className="flex items-center gap-3">
+          <Link 
+            to="/login" 
+            className="px-4 py-2 rounded-xl text-cyan-400 font-bold border border-cyan-400/40 hover:bg-cyan-400/10 hover:border-cyan-400 transition-all text-sm"
+          >
+            Login
+          </Link>
+
+          <Link 
+            to="/register" 
+            className="px-5 py-2 rounded-xl bg-fuchsia-500 hover:bg-fuchsia-400 text-zinc-950 font-extrabold text-sm shadow-[0_0_18px_rgba(217,70,239,0.5)] hover:shadow-[0_0_25px_rgba(217,70,239,0.8)] transition-all transform hover:-translate-y-0.5"
+          >
+            Register
+          </Link>
         </div>
-
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center font-bold text-slate-950 text-2xl shadow-lg shadow-emerald-500/20">
-            ♠
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-            BLACKJACK <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">21</span>
-          </h1>
-        </div>
-
-        <p className="text-slate-400 text-sm sm:text-base">
-          Entre com seu nome e o código da sala para começar a rodada.
-        </p>
       </header>
 
-      {/* 2. CAMPOS DE DADOS (NO MEIO) */}
-      <main className="relative z-10 w-full max-w-md my-8">
-        <div className="bg-slate-900/70 backdrop-blur-md p-8 rounded-3xl border border-slate-800/80 shadow-2xl shadow-black/80">
-          <form onSubmit={handleJoin} className="space-y-5">
-            {/* Input Nome */}
-            <div className="space-y-1.5">
-              <label htmlFor="playerName" className="text-xs font-bold uppercase tracking-wider text-slate-400 block pl-1">
-                Seu Nome
-              </label>
-              <input
-                id="playerName"
-                type="text"
-                placeholder="Como quer ser chamado?"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                maxLength={15}
-                className="w-full bg-slate-950/80 border border-slate-800 text-slate-100 placeholder-slate-600 px-4 py-3.5 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-medium text-base"
-                required
-              />
-            </div>
 
-            {/* Input Código da Sala */}
-            <div className="space-y-1.5">
-              <label htmlFor="roomCode" className="text-xs font-bold uppercase tracking-wider text-slate-400 block pl-1">
-                Código da Sala
-              </label>
-              <input
-                id="roomCode"
-                type="text"
-                placeholder="EX: A2B9"
-                value={roomCode}
-                onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                maxLength={6}
-                className="w-full bg-slate-950/80 border border-slate-800 text-slate-100 placeholder-slate-600 px-4 py-3.5 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-mono uppercase text-center font-bold tracking-widest text-xl"
-                required
-              />
-            </div>
+      {/* ================= HERO SECTION ================= */}
+      <main className="flex-1">
+        <section className="relative overflow-hidden pt-16 pb-20 px-6 lg:px-12 text-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-fuchsia-900/20 via-zinc-950 to-zinc-950">
+          
+          {/* Badge Neon Jazz */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-300/10 border border-amber-300/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-8 shadow-[0_0_10px_rgba(252,211,77,0.15)]">
+            🎷 Jazz Club & Casino Nights
+          </div>
 
-            {/* Botão Entrar */}
-            <button
-              type="submit"
-              disabled={!playerName.trim() || !roomCode.trim()}
-              className="w-full mt-2 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-extrabold text-lg hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-950/60 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+          {/* Título Principal */}
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-zinc-100 max-w-4xl mx-auto leading-tight mb-6">
+            Bem-vindo ao <br />
+            <span 
+              className="italic text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 via-purple-400 to-cyan-400 drop-shadow-[0_0_20px_rgba(217,70,239,0.4)]"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              Entrar na Sala
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </button>
-          </form>
-        </div>
+              Echo Palace
+            </span>
+          </h1>
+
+          {/* Subtítulo */}
+          <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto mb-10 font-normal leading-relaxed">
+            Entre no cassino mais exclusivo da noite. Slots de alta volatilidade, jogos crash ao vivo e recompensas em tempo real com a elegância do jazz.
+          </p>
+
+          {/* Botão de Registro */}
+          <div className="flex justify-center">
+            <Link 
+              to="/register" 
+              className="px-8 py-3.5 rounded-xl bg-fuchsia-500 hover:bg-fuchsia-400 text-zinc-950 font-black text-base shadow-[0_0_25px_rgba(217,70,239,0.6)] hover:shadow-[0_0_35px_rgba(217,70,239,0.9)] transition-all transform hover:-translate-y-1"
+            >
+              Criar Conta e Jogar
+            </Link>
+          </div>
+        </section>
+
+        {/* ================= BENEFÍCIOS ================= */}
+        <section className="px-6 lg:px-12 py-12 max-w-6xl mx-auto">
+          <h2 className="text-xl font-bold text-zinc-100 mb-8 flex items-center gap-2 border-l-4 border-fuchsia-500 pl-3">
+            Por que escolher o Echo Palace?
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-zinc-900/60 border border-zinc-800/80 p-6 rounded-2xl">
+              <div className="text-cyan-400 text-2xl mb-2">⚡</div>
+              <h3 className="text-zinc-100 font-bold mb-1">Pagamentos Instantâneos</h3>
+              <p className="text-zinc-400 text-sm">Receba Seus Lucros em Segundos Direto no PIX sem Burocracia.</p>
+            </div>
+
+            <div className="bg-zinc-900/60 border border-zinc-800/80 p-6 rounded-2xl">
+              <div className="text-cyan-400 text-2xl mb-2">🛡️</div>
+              <h3 className="text-zinc-100 font-bold mb-1">Plataforma Segura</h3>
+              <p className="text-zinc-400 text-sm">Criptografia Ponta a Ponta para Garantir a Segurança dos Seus Dados.</p>
+            </div>
+
+            <div className="bg-zinc-900/60 border border-zinc-800/80 p-6 rounded-2xl">
+              <div className="text-cyan-400 text-2xl mb-2">🎁</div>
+              <h3 className="text-zinc-100 font-bold mb-1">Bônus Exclusivo</h3>
+              <p className="text-zinc-400 text-sm">Ganhe Até 100% no Primeiro Depósito + Rodadas Grátis.</p>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* 3. CARTAS NO TEMA ESCURO (EM BAIXO) */}
-      <footer className="relative z-10 w-full flex flex-col items-center">
-        <div className="flex items-center justify-center gap-2 sm:gap-4 max-w-lg">
-          
-          {/* Carta 1: As de Espadas (Estilo Dark Gold) */}
-          <div className="w-24 h-36 sm:w-28 sm:h-40 rounded-xl bg-slate-900 border-2 border-amber-500/40 shadow-2xl flex flex-col justify-between p-3 transform -rotate-12 hover:-rotate-6 transition-transform duration-300 group">
-            <div className="flex flex-col">
-              <span className="text-amber-400 font-black text-xl leading-none">A</span>
-              <span className="text-amber-400 text-2xl font-bold -mt-1">♠</span>
-            </div>
-            <div className="self-center text-3xl text-amber-400/80 group-hover:scale-125 transition-transform">♠</div>
-            <span className="text-amber-400 font-black text-xl rotate-180 self-end leading-none">A</span>
-          </div>
 
-          {/* Carta 2: Valete (Estilo Dark Neon Crimson) */}
-          <div className="w-24 h-36 sm:w-28 sm:h-40 rounded-xl bg-slate-900 border-2 border-red-500/40 shadow-2xl flex flex-col justify-between p-3 transform -rotate-3 hover:rotate-0 transition-transform duration-300 z-10 group">
-            <div className="flex flex-col">
-              <span className="text-red-500 font-black text-xl leading-none">J</span>
-              <span className="text-red-500 text-2xl font-bold -mt-1">♥</span>
-            </div>
-            <div className="self-center text-3xl text-red-500/80 group-hover:scale-125 transition-transform">♥</div>
-            <span className="text-red-500 font-black text-xl rotate-180 self-end leading-none">J</span>
-          </div>
-
-          {/* Carta 3: Verso/Misteriosa (Estilo Dark Pattern) */}
-          <div className="w-24 h-36 sm:w-28 sm:h-40 rounded-xl bg-slate-900 border-2 border-emerald-500/40 shadow-2xl flex items-center justify-center p-2 transform rotate-12 hover:rotate-6 transition-transform duration-300 relative overflow-hidden group">
-            <div className="absolute inset-2 border border-slate-800 rounded-lg bg-slate-950 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xl group-hover:rotate-45 transition-transform">
-                21
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <p className="text-slate-600 text-xs mt-6 font-medium">
-          Blackjack Friends • Feito para jogar em grupo
+      {/* ================= RODAPÉ ================= */}
+      <footer className="bg-zinc-900/60 border-t border-zinc-800/80 px-6 py-8 text-center text-xs text-zinc-500">
+        <p className="mb-2 font-semibold text-zinc-400">
+          © 2026 Echo Palace Casino. Todos os direitos reservados.
+        </p>
+        <p>
+          Jogo responsável. Proibido para menores de 18 anos.
         </p>
       </footer>
 
