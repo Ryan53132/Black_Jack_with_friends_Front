@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import Home from '../pages/home';
 import Menu from '../pages/menu';
 import Login from '../pages/login';
+import Jogo from '../pages/jogo';
 import Register from '../pages/register';
 import { useEffect, useState } from "react";
 import { fetchComAuth } from "../services/api";
@@ -64,6 +65,7 @@ export function AppRoutes() {
         {/* Rotas Privadas */}
         <Route element={<PrivateRoute />}>
           <Route path="/menu" element={<Menu />} />
+          <Route path="/jogo/:id" element={<Jogo />} />
         </Route>
       </Routes>
     </BrowserRouter>
