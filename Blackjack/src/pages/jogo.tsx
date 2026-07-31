@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import { fetchComAuth } from "../services/api";
 import type { UserProfile } from "../services/interfaces";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getAccessToken } from "../services/api"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 let socket: Socket;
@@ -59,9 +60,13 @@ export default function MesaBlackjack() {
 
   // 2. Conectar ao Socket
   useEffect(() => {
-    if (!user || !codigoSala) return;
+    const token = getAccessToken(); 
+    if (!token || !codigoSala) return;
 
     socket = io(BACKEND_URL, {
+    auth: {
+      token: token // 🔒 Passa o token da memória diretamente no Handshake
+    },
       extraHeaders: {
         "ngrok-skip-browser-warning": "true",
       },
@@ -71,8 +76,6 @@ export default function MesaBlackjack() {
       setMeuSocketId(socket.id ?? "");
       socket.emit("entrar_sala", {
         salaId: codigoSala,
-        nomeJogador: user.username,
-        userId: user.id,
       });
     });
 
