@@ -16,7 +16,7 @@ function Menu() {
   };
 
   const handleEntrarSala = () => {
-    navigate(`/sala/${CodigoSala}`, {state: {salaId: CodigoSala}});
+    navigate(`/jogo/${CodigoSala}`, { state: { codigoSala: CodigoSala } });
   }
 
   useEffect(() => {
