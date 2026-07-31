@@ -85,16 +85,21 @@ export default function MesaBlackjack() {
     });
 
     return () => {
-      if (socket) socket.disconnect();
+    if (socket) {
+      socket.emit("sair_sala", { salaId: codigoSala });
+      socket.disconnect(); // Ou desassocia o ouvinte
+    }
     };
   }, [user, codigoSala]);
 
   const meuJogador = sala?.jogadores?.find((j: any) => j.id === meuSocketId);
   const meuGoldNoBanco = meuJogador?.gold ?? user?.gold ?? 0;
+  const souEspectador = meuJogador?.status === "espectador";
 
   const ehMinhaVez =
     sala?.status === "jogando" &&
-    sala?.jogadores[sala.turnoAtualIndex]?.id === meuSocketId;
+    sala?.jogadores[sala.turnoAtualIndex]?.id === meuSocketId &&
+    !souEspectador;
 
   const podeDobrar =
     ehMinhaVez &&
@@ -112,6 +117,13 @@ export default function MesaBlackjack() {
       salaId: codigoSala,
       aposta: apostaInicial,
     });
+  };
+
+  const sairDaSala = () => {
+    if (socket) {
+      socket.emit("sair_sala", { salaId: codigoSala });
+    }
+    navigate("/menu"); // Redireciona para a tela de salas/lobby
   };
 
   if (loading) {
@@ -147,7 +159,7 @@ export default function MesaBlackjack() {
       <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 px-4 md:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button 
-            onClick={() => navigate('/menu')} 
+            onClick={sairDaSala} 
             className="text-xs text-zinc-400 hover:text-cyan-400 font-bold transition-colors mr-2"
           >
             ← Sair
@@ -166,6 +178,15 @@ export default function MesaBlackjack() {
       {/* MESA DE JOGO PRINCIPAL */}
       <main className="flex-1 flex flex-col items-center justify-start p-2 sm:p-6 max-w-6xl mx-auto w-full relative z-10">
         
+        {/* BANNER AVISO DE ESPECTADOR */}
+        {souEspectador && sala.status === "jogando" && (
+          <div className="w-full max-w-md bg-cyan-500/10 border border-cyan-500/30 px-4 py-2 rounded-xl mb-4 text-center backdrop-blur-md animate-pulse">
+            <span className="text-xs font-bold text-cyan-300 flex items-center justify-center gap-1.5">
+              <span>👁️</span> Você está assistindo à rodada. Entrará no próximo jogo!
+            </span>
+          </div>
+        )}
+
         {/* MESA DE CASSINO (FELTRO ESCURO C/ BORDA NEON) */}
         <div className="w-full bg-emerald-950/40 border-2 border-emerald-600/30 rounded-t-full rounded-b-[4rem] p-4 sm:p-8 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] relative flex flex-col items-center justify-between min-h-[500px]">
           
@@ -191,7 +212,7 @@ export default function MesaBlackjack() {
             </span>
           </div>
 
-          {/* CARDS DOS 7 JOGADORES (CARROSSEL HORIZONTAL NO MOBILE) */}
+          {/* CARDS DOS JOGADORES */}
           <div className="w-full overflow-x-auto snap-x snap-mandatory flex gap-3 sm:gap-4 pb-4 pt-2 justify-start lg:justify-center scrollbar-none">
             {sala.jogadores?.map((j: any, index: number) => {
               const eOJogadorDaVez = index === sala.turnoAtualIndex && sala.status === "jogando";
@@ -278,7 +299,6 @@ function AreaDealer({ status, mao, pontos }: any) {
         </span>
       </div>
 
-      {/* Mao do Dealer */}
       <div className="flex gap-2 min-h-[70px]">
         {mao.length === 0 ? (
           <div className="w-12 h-16 border-2 border-dashed border-zinc-700/50 rounded-lg" />
@@ -296,10 +316,14 @@ function AreaDealer({ status, mao, pontos }: any) {
 }
 
 function CardJogador({ jogador, eMeuJogador, eOJogadorDaVez, pontos, statusSala }: any) {
+  const ehEspectador = jogador.status === "espectador";
+
   return (
     <div
-      className={`w-36 sm:w-40 p-3 rounded-2xl flex flex-col justify-between transition-all relative ${
-        eOJogadorDaVez
+      className={`w-36 sm:w-40 p-3 rounded-2xl flex flex-col justify-between transition-all relative min-h-[160px] ${
+        ehEspectador
+          ? "bg-zinc-900/40 border border-zinc-800/60 opacity-60"
+          : eOJogadorDaVez
           ? "bg-zinc-900/90 border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.3)] scale-105 z-20"
           : eMeuJogador
           ? "bg-zinc-900/80 border border-fuchsia-500/50 shadow-lg"
@@ -322,26 +346,36 @@ function CardJogador({ jogador, eMeuJogador, eOJogadorDaVez, pontos, statusSala 
           </span>
         )}
 
-        {/* Info Aposta & Gold */}
-        <div className="text-[10px] text-zinc-400 space-y-0.5 mb-2">
-          <p className="flex justify-between"><span>Aposta:</span> <strong className="text-amber-300">R${jogador.aposta}</strong></p>
-          {statusSala !== "aguardando" && (
-            <p className="flex justify-between">
-              <span>Pontos:</span> 
-              <strong className={pontos > 21 ? "text-rose-500 font-black" : "text-zinc-100"}>
-                {pontos} {pontos > 21 && "💥"}
-              </strong>
-            </p>
-          )}
-        </div>
+        {/* MODO ESPECTADOR OU JOGADOR ATIVO */}
+        {ehEspectador ? (
+          <div className="my-3 text-center">
+            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-md border border-cyan-500/20 inline-block">
+              👁️ Assistindo
+            </span>
+          </div>
+        ) : (
+          <div className="text-[10px] text-zinc-400 space-y-0.5 mb-2">
+            <p className="flex justify-between"><span>Aposta:</span> <strong className="text-amber-300">R${jogador.aposta}</strong></p>
+            {statusSala !== "aguardando" && (
+              <p className="flex justify-between">
+                <span>Pontos:</span> 
+                <strong className={pontos > 21 ? "text-rose-500 font-black" : "text-zinc-100"}>
+                  {pontos} {pontos > 21 && "💥"}
+                </strong>
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Cartas na Mão */}
-      <div className="flex gap-1 overflow-x-auto py-1 min-h-[50px] scrollbar-none">
-        {jogador.mao?.map((c: any, i: number) => (
-          <RenderCarta key={i} carta={c} pequena />
-        ))}
-      </div>
+      {/* Cartas na Mão (Apenas se não for espectador) */}
+      {!ehEspectador && (
+        <div className="flex gap-1 overflow-x-auto py-1 min-h-[50px] scrollbar-none">
+          {jogador.mao?.map((c: any, i: number) => (
+            <RenderCarta key={i} carta={c} pequena />
+          ))}
+        </div>
+      )}
 
       {/* Banner de Resultado Final */}
       {statusSala === "finalizado" && jogador.resultadoRodada && (
@@ -359,7 +393,6 @@ function CardJogador({ jogador, eMeuJogador, eOJogadorDaVez, pontos, statusSala 
   );
 }
 
-{/* SUB-COMPONENTE: DESIGN DE CARTA REALISTA */}
 function RenderCarta({ carta, oculta = false, pequena = false }: { carta?: any; oculta?: boolean; pequena?: boolean }) {
   if (oculta) {
     return (
@@ -380,7 +413,6 @@ function RenderCarta({ carta, oculta = false, pequena = false }: { carta?: any; 
   );
 }
 
-{/* BARRA FIXA DE AÇÕES */}
 function PainelAcoes({ salaId, podeDobrar, podeDividir }: any) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800 p-3 backdrop-blur-lg shadow-2xl">
