@@ -70,6 +70,17 @@ export default function BlackjackLanding() {
             >
               Criar Conta e Jogar
             </Link>
+            
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <Link 
+            to="/portifolio" 
+            className="px-4 py-2 rounded-xl text-cyan-400 font-bold border border-cyan-400/40 hover:bg-cyan-400/10 hover:border-cyan-400 transition-all text-sm"
+          >
+            Portifolio
+          </Link>
+            
           </div>
         </section>
 

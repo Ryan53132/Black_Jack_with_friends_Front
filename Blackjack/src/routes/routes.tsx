@@ -8,6 +8,7 @@ import Jogo from '../pages/jogo';
 import Register from '../pages/register';
 import { useEffect, useState } from "react";
 import { fetchComAuth } from "../services/api";
+import Portfolio from '../pages/portifolio';
 
 // O "Segurança" das rotas privadas
 export function PrivateRoute() {
@@ -62,6 +63,7 @@ export function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/portifolio" element={<Portfolio />} />
         {/* Rotas Privadas */}
         <Route element={<PrivateRoute />}>
           <Route path="/menu" element={<Menu />} />
